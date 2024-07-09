@@ -11,6 +11,7 @@
     --bg-main-dark: #121215;
     --bg-card-dark: #18181c;
     --bg-item-dark: #2F2D36;
+    --bg-pomo-dark: #41414a;
     --text-dark: #FFFFFF;
     --dark-1: #1E1E20;
     --dark-2: #8C8CA7;
@@ -18,7 +19,8 @@
     /* Colors - Light Mode */
     --bg-main-light: #FFFFFF;
     --bg-card-light: #F2F2F2;
-    --bg-item-light: #D6D6D6;
+    --bg-item-light: #dddddd;
+    --bg-pomo-light: #e8e8e8;
     --text-light: #18181C;
     --light-1: #1E1E20;
     --light-2: #8C8CA7;

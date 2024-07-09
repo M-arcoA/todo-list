@@ -2,18 +2,18 @@
     <div>
         <button class="pomodoro__timer" @click="toggleModal">
             <i class="fa fa-clock-o"></i>
-            {{ minutes }}:{{ seconds }}
+            {{ formattedMinutes }}:{{ formattedSeconds }}
         </button>
 
         <transition name="modal-fade">
             <div v-if="showModal" class="pomodoro__modal">
-                <div class="modal-container">
+                <div class="modal-container"  :class="pomoClasses">
                     <div class="modal-header">
                         <i class="fa fa-times" @click="closeModal"></i>
                     </div>
                     <div class="modal-content">
                         <template v-if="!showInput">
-                            <div class="modal-timer">{{ modalMinutes }}:{{ modalSeconds }}</div>
+                            <div class="modal-timer">{{ formattedMinutes }}:{{ formattedSeconds }}</div>
                         </template>
                         <template v-else>
                             <div class="modal-input">
@@ -36,25 +36,34 @@
 </template>
   
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
     data() {
         return {
             showModal: false,
             modalMinutes: 25,
             modalSeconds: 0,
+            timer: null,
             timerActive: false,
-            timerInterval: null,
             showInput: false,
             inputMinutes: null
         };
     },
     computed: {
-        minutes() {
+        ...mapGetters(['isDarkMode']),
+        formattedMinutes() {
             return this.formatTime(this.modalMinutes);
         },
-        seconds() {
+        formattedSeconds() {
             return this.formatTime(this.modalSeconds);
-        }
+        },
+        pomoClasses() {
+            return {
+                'dark-mode': this.isDarkMode,
+                'light-mode': !this.isDarkMode
+            };
+        },
     },
     methods: {
         formatTime(time) {
@@ -62,45 +71,40 @@ export default {
         },
         toggleModal() {
             this.showModal = !this.showModal;
-            if (this.showModal) {
-                this.modalMinutes = this.formatTime(this.modalMinutes);
-                this.modalSeconds = this.formatTime(this.modalSeconds);
-            }
         },
         closeModal() {
             this.showModal = false;
         },
         startTimer() {
-            if (!this.timerActive) {
+            if (!this.timer) {
                 this.timerActive = true;
-                this.timerInterval = setInterval(() => {
-                    if (this.modalMinutes === 0 && this.modalSeconds === 0) {
-                        clearInterval(this.timerInterval);
-                        this.timerActive = false;
-                    } else {
-                        if (this.modalSeconds === 0) {
-                            if (this.modalMinutes > 0) {
-                                this.modalMinutes -= 1;
-                                this.modalSeconds = 59;
-                            } else {
-                                this.modalSeconds = 0;
-                            }
+                this.timer = setInterval(() => {
+                    if (this.modalSeconds === 0) {
+                        if (this.modalMinutes === 0) {
+                            this.stopTimer(); 
                         } else {
-                            this.modalSeconds -= 1;
+                            this.modalMinutes -= 1;
+                            this.modalSeconds = 59;
                         }
+                    } else {
+                        this.modalSeconds -= 1;
                     }
                 }, 1000);
             }
         },
         stopTimer() {
-            clearInterval(this.timerInterval);
+            clearInterval(this.timer);
+            this.timer = null;
             this.timerActive = false;
-            this.modalMinutes = 25; 
+
+            this.modalMinutes = 25;
             this.modalSeconds = 0;
         },
         toggleTimer() {
-            if (this.timerActive) {
-                clearInterval(this.timerInterval);
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+                this.timerActive = false;
             } else {
                 this.startTimer();
             }
@@ -118,7 +122,8 @@ export default {
             }
             this.showInput = false;
             this.timerActive = false;
-            clearInterval(this.timerInterval);
+            clearInterval(this.timer);
+            this.timer = null;
         }
     }
 };
@@ -136,13 +141,22 @@ export default {
     opacity: 0;
 }
 
+.dark-mode {
+  background: var(--bg-pomo-dark);
+  color: var(--text-dark);
+}
+
+.light-mode {
+  background: var(--bg-pomo-light);
+  color: var(--bg-item-dark);
+}
+
 .pomodoro__modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -150,7 +164,6 @@ export default {
 }
 
 .modal-container {
-    background-color: var(--bg-item-dark);
     padding: 20px;
     border-radius: 5px;
     display: flex;
@@ -221,7 +234,6 @@ export default {
 }
 
 .modal-buttons i {
-    color: var(--text-dark);
     cursor: pointer;
 }
 
