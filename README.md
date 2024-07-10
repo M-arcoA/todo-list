@@ -55,4 +55,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 [Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D
 [Vue-url]: https://vuejs.org/
 
-??????? Code by [Dyovana Menegatti](https://www.linkedin.com/in/dyomenegatti/)
+👩🏻‍💻 Code by [Dyovana Menegatti](https://www.linkedin.com/in/dyomenegatti/)
